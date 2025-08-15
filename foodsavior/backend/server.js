@@ -17,7 +17,7 @@ app.use(cors({
 }));
 
 app.use(express.json());
-app.use('/api/utils', fixDonorsRoute);
+// app.use('/api/utils', fixDonorsRoute);
 
 app.use('/api/users', userRoutes);
 app.use('/api/foodposts', foodPostRoutes);
