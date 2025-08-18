@@ -1,28 +1,29 @@
 const jwt = require('jsonwebtoken');
 
+// ✅ Verify JWT Token
 exports.verifyToken = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
+  const authHeader = req.headers.authorization;
+
+  // Example: Authorization: Bearer <token>
   if (!authHeader) return res.status(401).json({ message: 'No token provided' });
 
-  const tokenParts = authHeader.split(' ');
-  if (tokenParts.length !== 2 || tokenParts[0] !== 'Bearer') {
-    return res.status(401).json({ message: 'Invalid token format' });
-  }
+  const token = authHeader.split(' ')[1];
+  if (!token) return res.status(401).json({ message: 'Invalid token format' });
 
-  const token = tokenParts[1];
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secretkey');
-    req.user = decoded;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secretkey'); 
+    req.user = decoded; // store decoded data { id, role }
     next();
   } catch (err) {
     res.status(401).json({ message: 'Invalid or expired token' });
   }
 };
 
+// ✅ Verify Role Middleware
 exports.verifyRole = (roles) => {
   return (req, res, next) => {
     if (!req.user || !roles.includes(req.user.role)) {
-      return res.status(403).json({ message: 'Access denied' });
+      return res.status(403).json({ message: 'Forbidden: Insufficient role' });
     }
     next();
   };
